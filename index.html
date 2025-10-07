@@ -8,6 +8,8 @@
 </head>
 <body>
     <div id="total-sales"></div>
+    <select id="currency-picker"></select>
+    <div id="total-currency"></div>
 
     <script>
         fetch('data.csv')
@@ -21,6 +23,27 @@
                     }
                 });
                 document.getElementById('total-sales').textContent = total.toFixed(2);
+
+                fetch('rates.json')
+                    .then(response => response.json())
+                    .then(rates => {
+                        const currencyPicker = document.getElementById('currency-picker');
+                        const totalCurrency = document.getElementById('total-currency');
+                        
+                        Object.keys(rates).forEach(currency => {
+                            const option = document.createElement('option');
+                            option.value = currency;
+                            option.textContent = currency;
+                            currencyPicker.appendChild(option);
+                        });
+
+                        currencyPicker.addEventListener('change', function() {
+                            const selectedCurrency = currencyPicker.value;
+                            const convertedTotal = total * rates[selectedCurrency];
+                            totalCurrency.textContent = `${selectedCurrency} `;
+                            document.getElementById('total-sales').textContent = convertedTotal.toFixed(2);
+                        });
+                    });
             });
     </script>
 </body>
